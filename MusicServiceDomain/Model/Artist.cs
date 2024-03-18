@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 
 namespace MusicServiceDomain.Model;
 
@@ -20,8 +19,6 @@ public partial class Artist : Entity
 
     [Display(Name = "Зображення")]
     public byte[]? Image { get; set; }
-
-    public virtual ICollection<Album> Albums { get; set; } = new List<Album>();
 
     public virtual ICollection<SongsArtist> SongsArtists { get; set; } = new List<SongsArtist>();
 }

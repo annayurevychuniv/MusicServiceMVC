@@ -19,14 +19,14 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ArtistId" class="control-label"></label>
-                <select asp-for="ArtistId" class="form-control" asp-items="ViewBag.ArtistId" multiple="multiple"></select>
-                <span asp-validation-for="ArtistId" class="text-danger"></span>
+                <label asp-for="SongsArtists" class="control-label"></label>
+                <select asp-for="SongsArtists" class="form-control" asp-items="ViewBag.SongsArtists" multiple="multiple"></select>
+                <span asp-validation-for="SongsArtists" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="GenreId" class="control-label"></label>
-                <select asp-for="GenreId" class="form-control" asp-items="ViewBag.GenreId"></select>
-                <span asp-validation-for="GenreId" class="text-danger"></span>
+                <label asp-for="SongsGenres" class="control-label"></label>
+                <select asp-for="SongsGenres" class="form-control" asp-items="ViewBag.SongsGenres" multiple="multiple"></select>
+                <span asp-validation-for="SongsGenres" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="LyricsId" class="control-label"></label>
@@ -34,14 +34,14 @@
                 <span asp-validation-for="LyricsId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Duration" class="control-label"></label>
-                <input asp-for="Duration" class="form-control" />
-                <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="AlbumId" class="control-label"></label>
                 <select asp-for="AlbumId" class="form-control" asp-items="ViewBag.AlbumId"></select>
                 <span asp-validation-for="AlbumId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration" class="control-label"></label>
+                <input asp-for="Duration" class="form-control" />
+                <span asp-validation-for="Duration" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">
@@ -51,7 +51,16 @@
         </form>
     </div>
 </div>
-
+@if (ViewData["FieldsWithErrors"] != null)
+{
+    <p>Слідуючі поля містять помилки:</p>
+    <ul>
+        @foreach (var fieldWithError in ViewData["FieldsWithErrors"] as List<string>)
+        {
+            <li>@fieldWithError</li>
+        }
+    </ul>
+}
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

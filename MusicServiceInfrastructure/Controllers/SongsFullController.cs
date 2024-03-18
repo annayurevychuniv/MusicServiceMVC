@@ -23,13 +23,12 @@ namespace MusicServiceInfrastructure.Controllers
         public async Task<IActionResult> Index(int? id, string? name)
         {
             var model = _context.Songs
-                .Where(b => b.ArtistId == id)
                 .Select(song => new SongsViewModel
                 {
                     Id = song.Id,
                     Title = song.Title,
-                    ArtistName = _context.Artists.FirstOrDefault(artist => artist.Id == song.ArtistId).Name,
-                    GenreName = _context.Genres.FirstOrDefault(genre => genre.Id == song.GenreId).Name,
+                    ArtistNames = song.SongsArtists.Select(sa => sa.Artist.Name).ToList(),
+                    GenreNames = song.SongsGenres.Select(sg => sg.Genre.Name).ToList(),
                     LyricsText = _context.Lyrics.FirstOrDefault(lyric => lyric.Id == song.LyricsId).Text,
                     Duration = song.Duration
                 })

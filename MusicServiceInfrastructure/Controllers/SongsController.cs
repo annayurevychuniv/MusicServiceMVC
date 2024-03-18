@@ -9,6 +9,7 @@ using Humanizer.Localisation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MusicServiceDomain.Model;
@@ -40,8 +41,8 @@ namespace MusicServiceInfrastructure.Controllers
                 {
                     Id = song.Id,
                     Title = song.Title,
-                    ArtistName = _context.Artists.FirstOrDefault(artist => artist.Id == song.ArtistId).Name,
-                    GenreName = _context.Genres.FirstOrDefault(genre => genre.Id == song.GenreId).Name,
+                    ArtistNames = song.SongsArtists.Select(sa => sa.Artist.Name).ToList(),
+                    GenreNames = song.SongsGenres.Select(sg => sg.Genre.Name).ToList(),
                     LyricsText = _context.Lyrics.FirstOrDefault(lyric => lyric.Id == song.LyricsId).Text,
                     Duration = song.Duration,
                     AlbumName = _context.Albums.FirstOrDefault(album => album.Id == song.AlbumId).Title,
@@ -70,8 +71,8 @@ namespace MusicServiceInfrastructure.Controllers
             {
                 Id = song.Id,
                 Title = song.Title,
-                ArtistName = _context.Artists.FirstOrDefault(artist => artist.Id == song.ArtistId).Name,
-                GenreName = _context.Genres.FirstOrDefault(genre => genre.Id == song.GenreId).Name,
+                ArtistNames = song.SongsArtists.Select(sa => sa.Artist.Name).ToList(),
+                GenreNames = song.SongsGenres.Select(sg => sg.Genre.Name).ToList(),
                 LyricsText = _context.Lyrics.FirstOrDefault(lyric => lyric.Id == song.LyricsId)?.Text,
                 Duration = song.Duration,
                 AlbumName = _context.Albums.FirstOrDefault(album => album.Id == song.AlbumId).Title,
@@ -84,11 +85,11 @@ namespace MusicServiceInfrastructure.Controllers
         [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name");
-            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Name");
-            var unusedLyrics = _context.Lyrics.Where(l => !_context.Songs.Any(s => s.LyricsId == l.Id)).ToList();
-            ViewData["LyricsId"] = new SelectList(unusedLyrics, "Id", "Text");
             ViewData["AlbumId"] = new SelectList(_context.Albums, "Id", "Title");
+
+            var unusedLyrics = _context.Lyrics.Where(l => !_context.Songs.Any(s => s.LyricsId == l.Id)).ToList();
+            ViewData["SongsArtists"] = new SelectList(_context.Artists, "Id", "Name");
+            ViewData["SongsGenres"] = new SelectList(_context.Genres, "Id", "Name");
             return View();
         }
 
@@ -98,12 +99,26 @@ namespace MusicServiceInfrastructure.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Create([Bind("Title,ArtistId,GenreId,LyricsId,Duration,AlbumId, Id")] Song song)
+        public async Task<IActionResult> Create([Bind("Title,LyricsId,AlbumId,Duration,Id")] Song song, int[] artists, int[] genres)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(song);
+
+                foreach (var artistId in artists)
+                {
+                    var songArtist = new SongsArtist { SongId = song.Id, ArtistId = artistId };
+                    _context.Add(songArtist);
+                }
+
+                foreach (var genreId in genres)
+                {
+                    var songGenre = new SongsGenre { SongId = song.Id, GenreId = genreId };
+                    _context.Add(songGenre);
+                }
+
                 await _context.SaveChangesAsync();
+
                 var lyrics = await _context.Lyrics.FindAsync(song.LyricsId);
 
                 if (lyrics != null)
@@ -112,19 +127,18 @@ namespace MusicServiceInfrastructure.Controllers
                     _context.Update(lyrics);
                 }
 
-                SongsArtist sa = new SongsArtist();
-                sa.SongId = song.Id;
-                sa.ArtistId = song.ArtistId;
-                _context.Add(sa);
-
-                SongsGenre sg = new SongsGenre();
-                sg.SongId = song.Id;
-                sg.GenreId = song.GenreId;
-                _context.Add(sg);
-
-                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            var fieldsWithErrors = ModelState
+        .Where(x => x.Value.ValidationState == ModelValidationState.Invalid)
+        .Select(x => x.Key)
+        .ToList();
+
+            // Передача списку полів з помилками у представлення
+            ViewData["FieldsWithErrors"] = fieldsWithErrors;
+
+            ViewData["AlbumId"] = new SelectList(_context.Albums, "Id", "Title");
             return View(song);
         }
 
@@ -142,8 +156,6 @@ namespace MusicServiceInfrastructure.Controllers
             {
                 return NotFound();
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name", song.ArtistId);
-            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Name", song.GenreId);
             var unusedLyrics = _context.Lyrics.Where(l => !_context.Songs.Any(s => s.LyricsId == l.Id)).ToList();
             ViewData["LyricsId"] = new SelectList(unusedLyrics, "Id", "Text");
             ViewData["AlbumId"] = new SelectList(_context.Albums, "Id", "Title");
@@ -233,6 +245,7 @@ namespace MusicServiceInfrastructure.Controllers
             return _context.Songs.Any(e => e.Id == id);
         }
 
+        /*
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "admin")]
@@ -418,6 +431,7 @@ namespace MusicServiceInfrastructure.Controllers
                 }
             }
         }
+        */
 
     }
 }

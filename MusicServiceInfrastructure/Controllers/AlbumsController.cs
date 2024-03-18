@@ -21,8 +21,7 @@ namespace MusicServiceInfrastructure.Controllers
         // GET: Albums
         public async Task<IActionResult> Index()
         {
-            var dbmusicServiceContext = _context.Albums.Include(a => a.Artist);
-            return View(await dbmusicServiceContext.ToListAsync());
+            return View(await _context.Albums.ToListAsync());
         }
 
         // GET: Albums/Details/5
@@ -34,7 +33,6 @@ namespace MusicServiceInfrastructure.Controllers
             }
 
             var album = await _context.Albums
-                .Include(a => a.Artist)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (album == null)
             {
@@ -56,7 +54,7 @@ namespace MusicServiceInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,ReleaseYear,ArtistId,Id")] Album album)
+        public async Task<IActionResult> Create([Bind("Title,ReleaseYear,Id")] Album album)
         {
             if (ModelState.IsValid)
             {
@@ -64,7 +62,6 @@ namespace MusicServiceInfrastructure.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name", album.ArtistId);
             return View(album);
         }
 
@@ -81,7 +78,6 @@ namespace MusicServiceInfrastructure.Controllers
             {
                 return NotFound();
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name", album.ArtistId);
             return View(album);
         }
 
@@ -117,7 +113,6 @@ namespace MusicServiceInfrastructure.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name", album.ArtistId);
             return View(album);
         }
 
@@ -130,7 +125,6 @@ namespace MusicServiceInfrastructure.Controllers
             }
 
             var album = await _context.Albums
-                .Include(a => a.Artist)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (album == null)
             {

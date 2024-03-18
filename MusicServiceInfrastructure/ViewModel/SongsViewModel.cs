@@ -9,11 +9,11 @@ namespace MusicServiceInfrastructure.ViewModel
         [Display(Name = "Назва")]
         public string Title { get; set; }
 
-        [Display(Name = "Виконавець")]
-        public string ArtistName { get; set; }
+        [Display(Name = "Виконавці")]
+        public List<string> ArtistNames { get; set; }
 
-        [Display(Name = "Жанр")]
-        public string GenreName { get; set; }
+        [Display(Name = "Жанри")]
+        public List<string> GenreNames { get; set; }
 
         [Display(Name = "Текст")]
         public string LyricsText { get; set; }
@@ -24,4 +24,5 @@ namespace MusicServiceInfrastructure.ViewModel
         [Display(Name = "Тривалість")]
         public int Duration { get; set; }
     }
+
 }
