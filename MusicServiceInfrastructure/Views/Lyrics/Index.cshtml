@@ -1,0 +1,36 @@
+﻿@model IEnumerable<MusicServiceDomain.Model.Lyric>
+
+@{
+    ViewData["Title"] = "Тексти";
+}
+
+<br />
+<h2>Тексти</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-dark" role="button">Створити новий текст</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.Raw(item.Text.Replace("\n", "<br/>"))
+                </td>
+                <td>
+                    <button type="button" class="btn btn-outline-dark" onclick="location.href='@Url.Action("Edit", new { id = item.Id })'">Редагувати</button>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Delete", new { id = item.Id })'">Видалити</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,38 @@
+﻿@model MusicServiceDomain.Model.Album
+
+@{
+    ViewData["Title"] = "Докладніше";
+}
+<br />
+<h1>Докладніше</h1>
+
+<div>
+    <h4>Альбом</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ReleaseYear)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ReleaseYear)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Artist)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Artist.Name)
+        </dd>
+    </dl>
+</div>
+<br />
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary">Редагувати</a> |
+    <a asp-action="Index" class="btn btn-outline-dark">Повернутися до списку</a> @*|
+    <button type="button" class="btn btn-outline-secondary" onclick="location.href='@Url.Action("SongsbyArtist", new { Model.Id })'">Переглянути пісні виконавця</onclick>*@
+</div>

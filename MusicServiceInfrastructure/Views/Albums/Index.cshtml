@@ -1,0 +1,41 @@
+﻿@model IEnumerable<MusicServiceDomain.Model.Album>
+
+@{
+    ViewData["Title"] = "Альбоми";
+}
+<br />
+<h2>Альбоми</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-dark" role="button">Створити новий альбом</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Artist)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Artist.Name)
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Details", new { id = item.Id })'">Докладніше</button>
+                <button type="button" class="btn btn-outline-dark" onclick="location.href='@Url.Action("Edit", new { id = item.Id })'">Редагувати</button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Delete", new { id = item.Id })'">Видалити</button>
+             </td>
+        </tr>
+}
+    </tbody>
+</table>

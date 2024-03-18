@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<MusicServiceDomain.Model.User> SignInManager
+@model IEnumerable<MusicServiceInfrastructure.ViewModel.SongsViewModel>
+
+@{
+    ViewData["Title"] = "Пісні";
+}
+
+<br />
+<h2>Пісні</h2>
+<p>
+    <a asp-action="Create" class="btn btn-dark" role="button">Створити нову пісню</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ArtistName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ArtistName)
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Details", new { id = item.Id })'">Докладніше</button>
+                    <button type="button" class="btn btn-outline-dark" onclick="location.href='@Url.Action("Edit", new { id = item.Id })'">Редагувати</button>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Delete", new { id = item.Id })'">Видалити</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<hr />
+
+@if (SignInManager.IsSignedIn(User) && User.IsInRole("admin"))
+{
+    <br />
+    <div>
+        <h3>Завантажити пісні з Excel-файлу</h3>
+        @using (Html.BeginForm("Import", "Songs", FormMethod.Post, new { enctype = "multipart/form-data", id = "frm-excel" }))
+        {
+            <div class="form-group">
+                <input class="form-control" type="file" id="fileExcel" name="fileExcel">
+            </div>
+            <br />
+            <input type="submit" class="btn btn-dark" value="Завантажити" />
+        }
+    </div>
+    <br />
+    <hr />
+    <br />
+    <div>
+        <h3>Завантажити пісні в Excel-файл</h3>
+        <a asp-action="Export" class="btn btn-dark">Завантажити</a>
+    </div>
+}

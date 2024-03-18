@@ -1,0 +1,65 @@
+﻿﻿@{
+    ViewData["Title"] = "MusicBox";
+}
+
+<head>
+    <style>
+
+        header {
+            z-index: 10;
+            position: relative;
+        }
+
+        .home__inner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .home__title {
+            color: white;
+            font-size: 65px;
+            margin-top: 180px;
+        }
+
+        .home__description {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .home__image {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 703px;
+            background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)), url(https://t3.ftcdn.net/jpg/05/57/29/70/360_F_557297065_Hahvyj3vZWf24XSIX6UntWqWdLfpoZht.jpg);
+            background-size: cover;
+            background-position: center
+        }
+
+        .home__text-block {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="home">
+        <div class="home__image"> </div>
+        <div class="home__inner">
+            <div class="home__text-block">
+                <div class="home__title">
+                    𝄞 MusicBox
+                </div>
+                <div class="home__description">
+                    Доторкніться до музики
+                </div>
+                <a asp-controller="Songs" a asp-action="Index" class="btn btn-light"> Переглянути пісні </a>
+            </div>
+        </div>
+    </div>
+</body>
