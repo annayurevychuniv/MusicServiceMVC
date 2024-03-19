@@ -18,8 +18,8 @@ namespace MusicServiceInfrastructure.ViewModel
         [Display(Name = "Текст")]
         public string LyricsText { get; set; }
 
-        [Display(Name = "Альбом")]
-        public string AlbumName { get; set; }
+        [Display(Name = "Альбоми")]
+        public List<string> AlbumNames { get; set; }
 
         [Display(Name = "Тривалість")]
         public int Duration { get; set; }

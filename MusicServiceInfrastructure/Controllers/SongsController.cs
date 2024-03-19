@@ -45,7 +45,7 @@ namespace MusicServiceInfrastructure.Controllers
                     GenreNames = song.SongsGenres.Select(sg => sg.Genre.Name).ToList(),
                     LyricsText = _context.Lyrics.FirstOrDefault(lyric => lyric.Id == song.LyricsId).Text,
                     Duration = song.Duration,
-                    AlbumName = _context.Albums.FirstOrDefault(album => album.Id == song.AlbumId).Title,
+                    AlbumNames = song.SongsAlbums.Select(sg => sg.Album.Title).ToList(),
                 })
                 .ToList();
 
@@ -75,7 +75,7 @@ namespace MusicServiceInfrastructure.Controllers
                 GenreNames = song.SongsGenres.Select(sg => sg.Genre.Name).ToList(),
                 LyricsText = _context.Lyrics.FirstOrDefault(lyric => lyric.Id == song.LyricsId)?.Text,
                 Duration = song.Duration,
-                AlbumName = _context.Albums.FirstOrDefault(album => album.Id == song.AlbumId).Title,
+                AlbumNames = song.SongsAlbums.Select(sg => sg.Album.Title).ToList(),
             };
 
             return View(songViewModel);
@@ -85,9 +85,9 @@ namespace MusicServiceInfrastructure.Controllers
         [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
-            ViewData["AlbumId"] = new SelectList(_context.Albums, "Id", "Title");
-
+            ViewData["SongsAlbums"] = new SelectList(_context.Albums, "Id", "Title");
             var unusedLyrics = _context.Lyrics.Where(l => !_context.Songs.Any(s => s.LyricsId == l.Id)).ToList();
+            ViewData["LyricsId"] = new SelectList(unusedLyrics, "Id", "Text");
             ViewData["SongsArtists"] = new SelectList(_context.Artists, "Id", "Name");
             ViewData["SongsGenres"] = new SelectList(_context.Genres, "Id", "Name");
             return View();
@@ -99,7 +99,7 @@ namespace MusicServiceInfrastructure.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Create([Bind("Title,LyricsId,AlbumId,Duration,Id")] Song song, int[] artists, int[] genres)
+        public async Task<IActionResult> Create([Bind("Title,LyricsId,Duration,Id")] Song song, int[] artists, int[] genres, int[] albums)
         {
             if (ModelState.IsValid)
             {
@@ -108,13 +108,22 @@ namespace MusicServiceInfrastructure.Controllers
                 foreach (var artistId in artists)
                 {
                     var songArtist = new SongsArtist { SongId = song.Id, ArtistId = artistId };
-                    _context.Add(songArtist);
+                    song.SongsArtists.Add(songArtist);
+                    _context.SongsArtists.Add(songArtist);
                 }
 
                 foreach (var genreId in genres)
                 {
                     var songGenre = new SongsGenre { SongId = song.Id, GenreId = genreId };
-                    _context.Add(songGenre);
+                    song.SongsGenres.Add(songGenre);
+                    _context.SongsGenres.Add(songGenre);
+                }
+
+                foreach (var albumId in albums)
+                {
+                    var songArtist = new SongsAlbum { SongId = song.Id, AlbumId = albumId };
+                    song.SongsAlbums.Add(songArtist);
+                    _context.SongsAlbums.Add(songArtist);
                 }
 
                 await _context.SaveChangesAsync();
@@ -137,8 +146,6 @@ namespace MusicServiceInfrastructure.Controllers
 
             // Передача списку полів з помилками у представлення
             ViewData["FieldsWithErrors"] = fieldsWithErrors;
-
-            ViewData["AlbumId"] = new SelectList(_context.Albums, "Id", "Title");
             return View(song);
         }
 

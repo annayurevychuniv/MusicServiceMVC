@@ -25,6 +25,8 @@ public partial class DbmusicServiceContext : DbContext
 
     public virtual DbSet<Song> Songs { get; set; }
 
+    public virtual DbSet<SongsAlbum> SongsAlbums { get; set; }
+
     public virtual DbSet<SongsArtist> SongsArtists { get; set; }
 
     public virtual DbSet<SongsGenre> SongsGenres { get; set; }
@@ -78,16 +80,26 @@ public partial class DbmusicServiceContext : DbContext
 
         modelBuilder.Entity<Song>(entity =>
         {
-            entity.Property(e => e.AlbumId).HasColumnName("AlbumID");
             entity.Property(e => e.LyricsId).HasColumnName("LyricsID");
             entity.Property(e => e.Title)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+        });
 
-            entity.HasOne(d => d.Album).WithMany(p => p.Songs)
+        modelBuilder.Entity<SongsAlbum>(entity =>
+        {
+            entity.Property(e => e.AlbumId).HasColumnName("AlbumID");
+            entity.Property(e => e.SongId).HasColumnName("SongID");
+
+            entity.HasOne(d => d.Album).WithMany(p => p.SongsAlbums)
                 .HasForeignKey(d => d.AlbumId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_SONGS_ALBUMS");
+                .HasConstraintName("FK_SONGSALBUMS_ALBUMS");
+
+            entity.HasOne(d => d.Song).WithMany(p => p.SongsAlbums)
+                .HasForeignKey(d => d.SongId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SONGSALBUMS_SONGS");
         });
 
         modelBuilder.Entity<SongsArtist>(entity =>

@@ -14,5 +14,5 @@ public partial class Album : Entity
     [Range(1900, 2024, ErrorMessage = "Рік випуску може бути від 1900 до цього року")]
     public int? ReleaseYear { get; set; }
 
-    public virtual ICollection<Song> Songs { get; set; } = new List<Song>();
+    public virtual ICollection<SongsAlbum> SongsAlbums { get; set; } = new List<SongsAlbum>();
 }
