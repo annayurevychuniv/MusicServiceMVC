@@ -10,8 +10,8 @@ public partial class Artist : Entity
     [Display(Name = "Ім'я")]
     public string Name { get; set; } = null!;
 
-    [Display(Name = "Дата народження (рррр-мм-дд)")]
-    [Range(1900, 2024, ErrorMessage = "Дата народження може бути від 1900 до цього року")]
+    [Display(Name = "Рік народження")]
+    [Range(1900, 2024, ErrorMessage = "Рік народження може бути від 1900 до цього року")]
     public int? BirthYear { get; set; }
 
     [Display(Name = "Країна")]

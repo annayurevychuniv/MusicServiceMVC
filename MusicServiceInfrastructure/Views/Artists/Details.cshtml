@@ -1,4 +1,6 @@
 ﻿@model MusicServiceDomain.Model.Artist
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<MusicServiceDomain.Model.User> SignInManager
 
 @{
     ViewData["Title"] = "Докладніше";
@@ -46,7 +48,7 @@
 </div>
 <br />
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary">Редагувати</a> |
     <a asp-action="Index" class="btn btn-outline-dark">Повернутися до списку</a> |
-    <button type="button" class="btn btn-outline-secondary" onclick="location.href='@Url.Action("SongsbyArtist", new { Model.Id })'">Переглянути пісні виконавця</onclick>
+    <a asp-action="SongsbyArtist" asp-route-id="@Model?.Id" class="btn btn-outline-secondary">Переглянути пісні</a> |
+    <a asp-action="AlbumsbyArtist" asp-route-id="@Model?.Id" class="btn btn-outline-primary">Переглянути альбоми</a>
 </div>

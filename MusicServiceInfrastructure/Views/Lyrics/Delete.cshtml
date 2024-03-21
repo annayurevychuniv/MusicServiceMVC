@@ -24,3 +24,17 @@
         <a asp-action="Index" class="btn btn-outline-dark">Повернутися до списку</a>
     </form>
 </div>
+<br />
+@if (!ViewData.ModelState.IsValid)
+{
+        <div class="alert alert-danger">
+        @foreach (var modelState in ViewData.ModelState.Values)
+        {
+            foreach (var error in modelState.Errors)
+            {
+                @error.ErrorMessage
+                            <br />
+            }
+        }
+        </div>
+}

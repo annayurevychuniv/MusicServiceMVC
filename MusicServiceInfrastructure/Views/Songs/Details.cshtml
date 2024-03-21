@@ -1,4 +1,6 @@
 ﻿@model MusicServiceInfrastructure.ViewModel.SongsViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<MusicServiceDomain.Model.User> SignInManager
 
 @{
     ViewData["Title"] = "Докладніше";
@@ -17,17 +19,29 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Title)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ArtistNames)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ArtistName)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ArtistNames)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ArtistName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GenreNames)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GenreName)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GenreNames)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GenreName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AlbumName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AlbumName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Duration)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Duration)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.LyricsText)
@@ -42,21 +56,8 @@
                 @Html.DisplayFor(model => model.LyricsText)
             }
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.AlbumNames)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.AlbumNames)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Duration)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Duration)
-        </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary">Редагувати</a> |
     <a asp-action="Index" class="btn btn-outline-dark">Повернутися до списку</a>
 </div>

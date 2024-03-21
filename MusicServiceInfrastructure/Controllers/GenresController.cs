@@ -139,14 +139,23 @@ namespace MusicServiceInfrastructure.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var genre = await _context.Genres.FindAsync(id);
-            if (genre != null)
+            if (genre == null)
             {
-                _context.Genres.Remove(genre);
+                return NotFound();
             }
 
+            var songsInGenre = await _context.Songs.Where(s => s.GenreId == id).ToListAsync();
+            if (songsInGenre.Any())
+            {
+                ModelState.AddModelError("", "Не можна видалити жанр, якщо є пісні такого жанру");
+                return View("Delete", genre);
+            }
+
+            _context.Genres.Remove(genre);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool GenreExists(int id)
         {

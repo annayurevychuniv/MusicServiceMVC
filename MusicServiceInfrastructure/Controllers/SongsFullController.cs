@@ -10,26 +10,28 @@ using MusicServiceInfrastructure.ViewModel;
 
 namespace MusicServiceInfrastructure.Controllers
 {
-    public class Songs1Controller : Controller
+    public class SongsFullController : Controller
     {
         private readonly DbmusicServiceContext _context;
 
-        public Songs1Controller(DbmusicServiceContext context)
+        public SongsFullController(DbmusicServiceContext context)
         {
             _context = context;
         }
 
-        // GET: Songs1
+        // GET: SongsFull
         public async Task<IActionResult> Index(int? id, string? name)
         {
             var model = _context.Songs
+                .Where(b => b.ArtistId == id)
                 .Select(song => new SongsViewModel
                 {
                     Id = song.Id,
                     Title = song.Title,
-                    ArtistNames = song.SongsArtists.Select(sa => sa.Artist.Name).ToList(),
-                    GenreNames = song.SongsGenres.Select(sg => sg.Genre.Name).ToList(),
+                    ArtistName = _context.Artists.FirstOrDefault(artist => artist.Id == song.ArtistId).Name,
+                    GenreName = _context.Genres.FirstOrDefault(genre => genre.Id == song.GenreId).Name,
                     LyricsText = _context.Lyrics.FirstOrDefault(lyric => lyric.Id == song.LyricsId).Text,
+                    AlbumName = _context.Albums.FirstOrDefault(album => album.Id == song.AlbumId).Title,
                     Duration = song.Duration
                 })
                 .ToList();
@@ -45,7 +47,7 @@ namespace MusicServiceInfrastructure.Controllers
             return View(model);
         }
 
-        // GET: Songs1/Details/5
+        // GET: SongsFull/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -63,13 +65,13 @@ namespace MusicServiceInfrastructure.Controllers
             return View(song);
         }
 
-        // GET: Songs1/Create
+        // GET: SongsFull/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Songs1/Create
+        // POST: SongsFull/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -85,7 +87,7 @@ namespace MusicServiceInfrastructure.Controllers
             return View(song);
         }
 
-        // GET: Songs1/Edit/5
+        // GET: SongsFull/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -101,7 +103,7 @@ namespace MusicServiceInfrastructure.Controllers
             return View(song);
         }
 
-        // POST: Songs1/Edit/5
+        // POST: SongsFull/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -136,7 +138,7 @@ namespace MusicServiceInfrastructure.Controllers
             return View(song);
         }
 
-        // GET: Songs1/Delete/5
+        // GET: SongsFull/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -154,7 +156,7 @@ namespace MusicServiceInfrastructure.Controllers
             return View(song);
         }
 
-        // POST: Songs1/Delete/5
+        // POST: SongsFull/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

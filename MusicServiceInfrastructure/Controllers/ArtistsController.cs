@@ -1,14 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Vml;
+using Humanizer.Localisation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MusicServiceDomain.Model;
+using MusicServiceInfrastructure;
+using System.Linq;
+using System.Threading.Tasks;
+using MusicServiceInfrastructure.ViewModel;
 
 namespace MusicServiceInfrastructure.Controllers
 {
+    [Authorize(Roles = "admin, user")]
     public class ArtistsController : Controller
     {
         private readonly DbmusicServiceContext _context;
@@ -43,6 +55,7 @@ namespace MusicServiceInfrastructure.Controllers
         }
 
         // GET: Artists/Create
+        [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
             return View();
@@ -53,18 +66,45 @@ namespace MusicServiceInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,BirthYear,Country,Image,Id")] Artist artist)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Create([Bind("Name,BirthYear,Country,Image,Id")] MusicServiceDomain.Model.Artist artist, IFormFile imageFile)
         {
+            if (imageFile == null)
+            {
+                artist.Image = null;
+                if (artist.Name != null)
+                {
+                    _context.Add(artist);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return View(artist);
+                }
+            }
             if (ModelState.IsValid)
             {
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await imageFile.CopyToAsync(memoryStream);
+                        artist.Image = memoryStream.ToArray();
+                    }
+                }
+
                 _context.Add(artist);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(artist);
         }
 
+
         // GET: Artists/Edit/5
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -77,6 +117,7 @@ namespace MusicServiceInfrastructure.Controllers
             {
                 return NotFound();
             }
+
             return View(artist);
         }
 
@@ -85,17 +126,50 @@ namespace MusicServiceInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,BirthYear,Country,Image,Id")] Artist artist)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Edit(int id, [Bind("Name,BirthYear,Country,Image,Id")] MusicServiceDomain.Model.Artist artist, IFormFile imageFile)
         {
-            if (id != artist.Id)
+            var existingArtist = await _context.Artists.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
+
+            if (existingArtist == null)
             {
                 return NotFound();
             }
 
+            if (imageFile == null)
+            {
+                try
+                {
+                    artist.Image = existingArtist.Image;
+                    _context.Update(artist);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ArtistExists(artist.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await imageFile.CopyToAsync(memoryStream);
+                            artist.Image = memoryStream.ToArray();
+                        }
+                    }
+
                     _context.Update(artist);
                     await _context.SaveChangesAsync();
                 }
@@ -116,6 +190,7 @@ namespace MusicServiceInfrastructure.Controllers
         }
 
         // GET: Artists/Delete/5
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -139,18 +214,81 @@ namespace MusicServiceInfrastructure.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var artist = await _context.Artists.FindAsync(id);
-            if (artist != null)
+            if (artist == null)
             {
-                _context.Artists.Remove(artist);
+                return NotFound();
             }
 
+            var songs = await _context.Songs.Where(s => s.ArtistId == id).ToListAsync();
+            if (songs.Any())
+            {
+                ModelState.AddModelError("", "Не можна видалити виконавця, у якого є пісні");
+                return View("Delete", artist);
+            }
+
+            _context.Artists.Remove(artist);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool ArtistExists(int id)
         {
             return _context.Artists.Any(e => e.Id == id);
         }
+
+
+        public async Task<IActionResult> SongsbyArtist(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var artist = await _context.Artists
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (artist == null)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction("Index", "SongsFull", new { id = artist.Id, name = artist.Name });
+        }
+
+        public async Task<IActionResult> AlbumsbyArtist(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var artist = await _context.Artists
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (artist == null)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction("Album", "Artists", new { id = artist.Id, name = artist.Name });
+        }
+
+        // GET: SongsFull
+        public async Task<IActionResult> Album(int? id, string? name)
+        {
+            var artistAlbums = _context.Albums
+                .Where(album => _context.Songs.Any(song => song.ArtistId == id && song.AlbumId == album.Id))
+                .ToList();
+
+            if (id == null)
+            {
+                return RedirectToAction("Index", "Artists");
+            }
+
+            ViewBag.ArtistId = id;
+            ViewBag.Name = name;
+
+            return View(artistAlbums);
+        }
+
     }
 }

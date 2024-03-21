@@ -4,17 +4,17 @@ namespace MusicServiceInfrastructure.ViewModel
 {
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Поле не повинно бути порожнім")]
         [Display(Name = "Пошта")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Поле не повинно бути порожнім")]
         [Display(Name = "Пароль")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Поле не повинно бути порожнім")]
         [Compare("Password", ErrorMessage = "Паролі не співпадають")]
         [Display(Name = "Підтвердження паролю")]
         [DataType(DataType.Password)]

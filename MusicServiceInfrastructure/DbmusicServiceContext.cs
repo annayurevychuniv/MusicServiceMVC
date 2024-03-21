@@ -80,6 +80,9 @@ public partial class DbmusicServiceContext : DbContext
 
         modelBuilder.Entity<Song>(entity =>
         {
+            entity.Property(e => e.AlbumId).HasColumnName("AlbumID");
+            entity.Property(e => e.ArtistId).HasColumnName("ArtistID");
+            entity.Property(e => e.GenreId).HasColumnName("GenreID");
             entity.Property(e => e.LyricsId).HasColumnName("LyricsID");
             entity.Property(e => e.Title)
                 .HasMaxLength(50)
@@ -120,6 +123,8 @@ public partial class DbmusicServiceContext : DbContext
 
         modelBuilder.Entity<SongsGenre>(entity =>
         {
+            entity.HasKey(e => e.Id).HasName("PK_SongsGenres_1");
+
             entity.Property(e => e.GenreId).HasColumnName("GenreID");
             entity.Property(e => e.SongId).HasColumnName("SongID");
 

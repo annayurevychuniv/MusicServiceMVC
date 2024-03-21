@@ -9,18 +9,29 @@
 <br />
 <h2>Пісні</h2>
 <p>
-    <a asp-action="Create" class="btn btn-dark" role="button">Створити нову пісню</a>
+    @if (!SignInManager.IsSignedIn(User))
+    {
+        <div class="alert alert-dismissible alert-danger">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            Для того щоб побачити більше інформації про пісні, виконавців, альбоми та інше, зареєструйтеся
+        </div>
+    }
+    @if (SignInManager.IsSignedIn(User) && User.IsInRole("admin"))
+    {
+        <a asp-action="Create" class="btn btn-dark" role="button">Створити нову пісню</a>
+    }
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ArtistNames)
+                @Html.DisplayNameFor(model => model.ArtistName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AlbumName)
             </th>
             <th></th>
         </tr>
@@ -33,12 +44,21 @@
                     @Html.DisplayFor(modelItem => item.Title)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ArtistNames)
+                    @Html.DisplayFor(modelItem => item.ArtistName)
                 </td>
                 <td>
-                    <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Details", new { id = item.Id })'">Докладніше</button>
-                    <button type="button" class="btn btn-outline-dark" onclick="location.href='@Url.Action("Edit", new { id = item.Id })'">Редагувати</button>
-                    <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Delete", new { id = item.Id })'">Видалити</button>
+                    @Html.DisplayFor(modelItem => item.AlbumName)
+                </td>
+                <td>
+                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("admin") || User.IsInRole("user")))
+                    {
+                        <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Details", new { id = item.Id })'">Докладніше</button>
+                    }
+                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("admin"))
+                    {
+                        <button type="button" class="btn btn-outline-dark" onclick="location.href='@Url.Action("Edit", new { id = item.Id })'">Редагувати</button>
+                        <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Delete", new { id = item.Id })'">Видалити</button>
+                    }
                 </td>
             </tr>
         }
@@ -51,8 +71,10 @@
     <br />
     <div>
         <h3>Завантажити пісні з Excel-файлу</h3>
+        <h8 style="color: red;">Будуть додані лише пісні, у яких заповнені всі поля</h8>
         @using (Html.BeginForm("Import", "Songs", FormMethod.Post, new { enctype = "multipart/form-data", id = "frm-excel" }))
         {
+            <br />
             <div class="form-group">
                 <input class="form-control" type="file" id="fileExcel" name="fileExcel">
             </div>

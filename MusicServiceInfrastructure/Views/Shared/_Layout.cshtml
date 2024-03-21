@@ -44,12 +44,6 @@
                                 <a class="nav-link" asp-controller="Albums" asp-action="Index">Альбоми</a>
                             </li>
                         }
-                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("user"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Songs" asp-action="Favourites">Улюблені пісні</a>
-                            </li>
-                        }
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole("admin"))
                         {
                             <li class="nav-item">

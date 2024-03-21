@@ -1,4 +1,4 @@
-﻿﻿@model MusicServiceDomain.Model.Lyric
+﻿@model MusicServiceDomain.Model.Lyric
 
 @{
     ViewData["Title"] = "Редагувати";
@@ -14,8 +14,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Text" class="control-label"></label>
-                <input asp-for="Text" class="form-control" />
-                <span asp-validation-for="Text" class="text-danger"></span>
+                <textarea asp-for="Text" class="form-control" rows="3"></textarea>
             </div>
             <br />
             <div class="form-group">

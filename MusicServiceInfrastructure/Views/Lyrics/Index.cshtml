@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<MusicServiceDomain.Model.Lyric>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<MusicServiceDomain.Model.User> SignInManager
 
 @{
     ViewData["Title"] = "Тексти";
@@ -8,7 +10,10 @@
 <h2>Тексти</h2>
 
 <p>
-    <a asp-action="Create" class="btn btn-dark" role="button">Створити новий текст</a>
+    @if (SignInManager.IsSignedIn(User) && User.IsInRole("admin"))
+    {
+        <a asp-action="Create" class="btn btn-dark" role="button">Створити новий текст</a>
+    }
 </p>
 <table class="table">
     <thead>
@@ -27,8 +32,11 @@
                     @Html.Raw(item.Text.Replace("\n", "<br/>"))
                 </td>
                 <td>
-                    <button type="button" class="btn btn-outline-dark" onclick="location.href='@Url.Action("Edit", new { id = item.Id })'">Редагувати</button>
-                    <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Delete", new { id = item.Id })'">Видалити</button>
+                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("admin"))
+                    {
+                        <button type="button" class="btn btn-outline-dark" onclick="location.href='@Url.Action("Edit", new { id = item.Id })'">Редагувати</button>
+                        <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Delete", new { id = item.Id })'">Видалити</button>
+                    }
                 </td>
             </tr>
         }

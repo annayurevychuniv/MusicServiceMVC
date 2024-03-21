@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace MusicServiceDomain.Model;
 
@@ -19,6 +20,18 @@ public partial class Song : Entity
     [Display(Name = "Тривалість (в секундах)")]
     public int Duration { get; set; }
 
+    [Required(ErrorMessage = "Поле не повинно бути порожнім")]
+    [Display(Name = "Альбом")]
+    public int AlbumId { get; set; }
+
+    [Required(ErrorMessage = "Поле не повинно бути порожнім")]
+    [Display(Name = "Виконавець")]
+    public int ArtistId { get; set; }
+
+    [Required(ErrorMessage = "Поле не повинно бути порожнім")]
+    [Display(Name = "Жанр")]
+    public int GenreId { get; set; }
+
     public virtual Lyric? Lyric { get; set; }
 
     public virtual ICollection<SongsAlbum> SongsAlbums { get; set; } = new List<SongsAlbum>();
@@ -26,12 +39,4 @@ public partial class Song : Entity
     public virtual ICollection<SongsArtist> SongsArtists { get; set; } = new List<SongsArtist>();
 
     public virtual ICollection<SongsGenre> SongsGenres { get; set; } = new List<SongsGenre>();
-
-    public Song()
-    {
-        SongsAlbums = new HashSet<SongsAlbum>();
-        SongsArtists = new HashSet<SongsArtist>();
-        SongsGenres = new HashSet<SongsGenre>();
-    }
-
 }

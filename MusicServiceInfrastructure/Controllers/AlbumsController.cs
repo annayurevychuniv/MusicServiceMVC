@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Humanizer.Localisation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +46,6 @@ namespace MusicServiceInfrastructure.Controllers
         // GET: Albums/Create
         public IActionResult Create()
         {
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name");
             return View();
         }
 
@@ -86,7 +86,7 @@ namespace MusicServiceInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Title,ReleaseYear,ArtistId,Id")] Album album)
+        public async Task<IActionResult> Edit(int id, [Bind("Title,ReleaseYear,Id")] Album album)
         {
             if (id != album.Id)
             {
@@ -143,6 +143,13 @@ namespace MusicServiceInfrastructure.Controllers
             if (album != null)
             {
                 _context.Albums.Remove(album);
+            }
+
+            var songsInAlbum = await _context.Songs.Where(s => s.AlbumId == id).ToListAsync();
+            if (songsInAlbum.Any())
+            {
+                ModelState.AddModelError("", "Не можна видалити альбом, якщо в ньому є пісні");
+                return View("Delete", album);
             }
 
             await _context.SaveChangesAsync();

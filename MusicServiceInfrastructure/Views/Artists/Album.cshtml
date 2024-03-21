@@ -1,0 +1,36 @@
+﻿@model IEnumerable<MusicServiceDomain.Model.Album>
+
+@{
+    ViewData["Title"] = "Альбоми";
+}
+
+<br />
+<h2>Альбоми за виконавцем @ViewBag.Name</h2>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReleaseYear)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReleaseYear)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a href="javascript:history.back()" class="btn btn-dark">Повернутися назад</a>

@@ -14,7 +14,10 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.GenreNames)
+                @Html.DisplayNameFor(model => model.GenreName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AlbumName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Duration)
@@ -30,7 +33,10 @@
                     @Html.DisplayFor(modelItem => item.Title)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.GenreNames)
+                    @Html.DisplayFor(modelItem => item.GenreName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AlbumName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Duration)

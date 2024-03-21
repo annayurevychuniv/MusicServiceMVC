@@ -13,20 +13,21 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <h8 style="color: red;">Якщо якийсь із випадаючих списків пустий, потрібно спочатку додати таку сутність</h8>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SongsArtists" class="control-label"></label>
-                <select asp-for="SongsArtists" class="form-control" asp-items="ViewBag.SongsArtists" multiple="multiple"></select>
-                <span asp-validation-for="SongsArtists" class="text-danger"></span>
+                <label asp-for="ArtistId" class="control-label"></label>
+                <select asp-for="ArtistId" class="form-control" asp-items="ViewBag.ArtistId"></select>
+                <span asp-validation-for="ArtistId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SongsGenres" class="control-label"></label>
-                <select asp-for="SongsGenres" class="form-control" asp-items="ViewBag.SongsGenres" multiple="multiple"></select>
-                <span asp-validation-for="SongsGenres" class="text-danger"></span>
+                <label asp-for="GenreId" class="control-label"></label>
+                <select asp-for="GenreId" class="form-control" asp-items="ViewBag.GenreId"></select>
+                <span asp-validation-for="GenreId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="LyricsId" class="control-label"></label>
@@ -34,9 +35,9 @@
                 <span asp-validation-for="LyricsId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SongsAlbums" class="control-label"></label>
-                <select asp-for="SongsAlbums" class="form-control" asp-items="ViewBag.SongsAlbums"></select>
-                <span asp-validation-for="SongsAlbums" class="text-danger"></span>
+                <label asp-for="AlbumId" class="control-label"></label>
+                <select asp-for="AlbumId" class="form-control" asp-items="ViewBag.AlbumId"></select>
+                <span asp-validation-for="AlbumId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Duration" class="control-label"></label>
@@ -51,16 +52,6 @@
         </form>
     </div>
 </div>
-@if (ViewData["FieldsWithErrors"] != null)
-{
-    <p>Слідуючі поля містять помилки:</p>
-    <ul>
-        @foreach (var fieldWithError in ViewData["FieldsWithErrors"] as List<string>)
-        {
-            <li>@fieldWithError</li>
-        }
-    </ul>
-}
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

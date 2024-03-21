@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Humanizer.Localisation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -47,7 +48,6 @@ namespace MusicServiceInfrastructure.Controllers
         // GET: Lyrics/Create
         public IActionResult Create()
         {
-            ViewData["SongId"] = new SelectList(_context.Songs, "Id", "Title");
             return View();
         }
 
@@ -56,15 +56,25 @@ namespace MusicServiceInfrastructure.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Text,SongId,Id")] Lyric lyric)
+        public async Task<IActionResult> Create([Bind("Text,Id")] Lyric lyric)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(lyric);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var existingNullSongIdLyrics = await _context.Lyrics.FirstOrDefaultAsync(l => l.SongId == null);
+
+                if (existingNullSongIdLyrics != null)
+                {
+                    ModelState.AddModelError("", "Не може бути двох текстів, не прив'язаних до пісень");
+                    return View("Create", lyric);
+                }
+                else
+                {
+                    _context.Add(lyric);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            ViewData["SongId"] = new SelectList(_context.Songs, "Id", "Title", lyric.SongId);
+
             return View(lyric);
         }
 
@@ -149,6 +159,13 @@ namespace MusicServiceInfrastructure.Controllers
             if (lyric != null)
             {
                 _context.Lyrics.Remove(lyric);
+            }
+
+            var songsInLyrics = await _context.Songs.Where(s => s.LyricsId == id).ToListAsync();
+            if (songsInLyrics.Any())
+            {
+                ModelState.AddModelError("", "Не можна видалити текст, якщо він прив'язаний до пісні");
+                return View("Delete", lyric);
             }
 
             await _context.SaveChangesAsync();
