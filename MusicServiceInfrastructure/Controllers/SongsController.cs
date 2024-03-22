@@ -246,8 +246,7 @@ namespace MusicServiceInfrastructure.Controllers
             var text = await _context.Lyrics.FirstOrDefaultAsync(t => t.SongId == id);
             if (text != null)
             {
-                text.SongId = null;
-                _context.Lyrics.Update(text);
+                _context.Lyrics.Remove(text);
             }
 
             _context.Songs.Remove(song);
