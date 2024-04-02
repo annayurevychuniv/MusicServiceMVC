@@ -6,6 +6,21 @@
     ViewData["Title"] = "Пісні";
 }
 
+@{
+    var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <script>
+        function showErrorPopup(message) {
+            alert(message);
+        }
+
+        showErrorPopup("@errorMessage");
+    </script>
+}
+
 <br />
 <h2>Пісні</h2>
 <p>
