@@ -29,7 +29,7 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Songs" asp-action="Index">Пісні</a>
                         </li>
-                        @if (SignInManager.IsSignedIn(User) && (User.IsInRole("admin") || User.IsInRole("user")))
+                        @if (SignInManager.IsSignedIn(User) && (User.IsInRole("admin") || User.IsInRole("user") || User.IsInRole("system_admin")))
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Artists" asp-action="Index">Виконавці</a>
@@ -44,7 +44,7 @@
                                 <a class="nav-link" asp-controller="Albums" asp-action="Index">Альбоми</a>
                             </li>
                         }
-                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("admin"))
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("system_admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Roles" asp-action="Index">Управління ролями</a>
